@@ -1,6 +1,10 @@
+# go things
 bin
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+
+# storages
+*.db
