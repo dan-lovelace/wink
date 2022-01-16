@@ -13,11 +13,11 @@ endif
 
 .PHONY: migrateup
 migrateup:
-	@go run db/migrate.go up
+	@go run migrate/main.go up
 
 .PHONY: migratedown
 migratedown:
-	@go run db/migrate.go down
+	@go run migrate/main.go down
 
 validate-db-connection:
 ifndef DB_CONNECTION_STRING

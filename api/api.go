@@ -1,11 +1,14 @@
 package api
 
 import (
+	"context"
 	"log"
+
+	winkDB "github.com/dan-lovelace/wink/db"
 )
 
-func StartNewTimer() {
-	db := getDB()
+func StartNewTimer(ctx context.Context) {
+	db := winkDB.GetDB(ctx)
 	defer db.Close()
 
 	sqlStmt := `
