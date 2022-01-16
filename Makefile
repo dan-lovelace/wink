@@ -12,14 +12,12 @@ endif
 	migrate create -ext sql -dir $(MIGRATIONS_DIRECTORY) -seq $(name)
 
 .PHONY: migrateup
-migrateup: validate-db-connection
-	$(info Migrating up)
-	@migrate -path $(MIGRATIONS_DIRECTORY) -database $(DB_CONNECTION_STRING) -verbose up $(count)
+migrateup:
+	@go run db/migrate.go up
 
 .PHONY: migratedown
-migratedown: validate-db-connection
-	$(info Migrating down)
-	@migrate -path $(MIGRATIONS_DIRECTORY) -database $(DB_CONNECTION_STRING) -verbose down $(count)
+migratedown:
+	@go run db/migrate.go down
 
 validate-db-connection:
 ifndef DB_CONNECTION_STRING
