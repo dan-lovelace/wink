@@ -16,7 +16,7 @@ create table project (
 
     user_id integer references user(id) on delete cascade not null,
     
-    name text not null
+    name text unique not null
 );
 
 create table time_block (

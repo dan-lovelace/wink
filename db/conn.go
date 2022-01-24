@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/dan-lovelace/wink/configs"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func GetDB(ctx context.Context) *sql.DB {

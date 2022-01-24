@@ -1,4 +1,4 @@
-MIGRATIONS_DIRECTORY="db/migrations"
+MIGRATIONS_DIRECTORY="migrate/migrations"
 
 .PHONY: newmigration
 newmigration:
