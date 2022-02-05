@@ -1,8 +1,7 @@
 package commands
 
 import (
-	"fmt"
-
+	"github.com/dan-lovelace/wink/common"
 	"github.com/spf13/cobra"
 )
 
@@ -10,8 +9,7 @@ type Response struct {
 	Err error
 }
 
-func Execute(args []string) Response {
-	fmt.Println("Executed with args", args)
+func Execute(w *common.Wink, args []string) Response {
 	var resp Response
 
 	rootCmd := &cobra.Command{
@@ -23,7 +21,7 @@ func Execute(args []string) Response {
 		},
 	}
 
-	rootCmd.AddCommand(projectCommand())
+	rootCmd.AddCommand(projectCommand(w))
 
 	err := rootCmd.Execute()
 	resp.Err = err
