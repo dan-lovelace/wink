@@ -2,16 +2,26 @@ package main
 
 import (
 	"context"
+	"log"
 	"os"
 
 	"github.com/dan-lovelace/wink/commands"
 	"github.com/dan-lovelace/wink/common"
+	"github.com/dan-lovelace/wink/configs"
 )
 
 func main() {
-	w := &common.Wink{Context: context.Background()}
+	w := &common.Wink{
+		Config:  configs.GetAppConfig(),
+		Context: context.Background(),
+	}
+
+	if initResp := commands.CheckInit(w); initResp.Error != nil {
+		log.Fatal(initResp.Error)
+	}
+
 	resp := commands.Execute(w, os.Args[1:])
-	if resp.Err != nil {
-		os.Exit(-1)
+	if resp.Error != nil {
+		log.Fatal(resp.Error)
 	}
 }

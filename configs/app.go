@@ -7,9 +7,22 @@ import (
 	"github.com/joho/godotenv"
 )
 
+type Config struct {
+	DB *DBConn
+}
+
 type Env interface {
 	Get() string
 	Set(value string)
+}
+
+func GetAppConfig() Config {
+	return Config{
+		DB: &DBConn{
+			Driver:   "sqlite3",
+			Location: "./test.db",
+		},
+	}
 }
 
 func GetEnv(key string) (*string, error) {

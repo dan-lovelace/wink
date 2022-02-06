@@ -1,16 +1,15 @@
 package db
 
 import (
-	"context"
 	"database/sql"
 	"log"
 
-	"github.com/dan-lovelace/wink/configs"
+	"github.com/dan-lovelace/wink/common"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func GetDB(ctx context.Context) *sql.DB {
-	db, err := sql.Open(configs.DBConn.Driver, configs.DBConn.Location)
+func GetDB(w *common.Wink) *sql.DB {
+	db, err := sql.Open(w.Config.DB.Driver, w.Config.DB.Location)
 	if err != nil {
 		log.Fatal(err)
 	}

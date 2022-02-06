@@ -1,11 +1,6 @@
 package configs
 
-type dbConn struct {
+type DBConn struct {
 	Driver   string
 	Location string
-}
-
-var DBConn = dbConn{
-	Driver:   "sqlite3",
-	Location: "./test.db",
 }

@@ -18,7 +18,7 @@ func createProjectCommand(w *common.Wink) *cobra.Command {
 			name := args[0]
 			fmt.Println("Creating project", name)
 
-			db := winkDB.GetDB(w.Context)
+			db := winkDB.GetDB(w)
 			defer db.Close()
 
 			stmt, err := db.Prepare("INSERT INTO project(user_id, name) VALUES((SELECT id FROM user WHERE username = 'default'), ?)")
@@ -47,7 +47,7 @@ func getProjectsCommand(w *common.Wink) *cobra.Command {
 		Short:   "List all projects",
 		Aliases: []string{"ls"},
 		Run: func(cmd *cobra.Command, args []string) {
-			db := winkDB.GetDB(w.Context)
+			db := winkDB.GetDB(w)
 			defer db.Close()
 
 			stmt, err := db.Prepare("SELECT name FROM project;")

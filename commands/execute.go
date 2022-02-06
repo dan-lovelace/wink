@@ -5,12 +5,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type Response struct {
-	Err error
+type CommandResponse struct {
+	Data  interface{}
+	Error error
 }
 
-func Execute(w *common.Wink, args []string) Response {
-	var resp Response
+func Execute(w *common.Wink, args []string) CommandResponse {
+	var resp CommandResponse
 
 	rootCmd := &cobra.Command{
 		Use:   "wink",
@@ -21,10 +22,11 @@ func Execute(w *common.Wink, args []string) Response {
 		},
 	}
 
+	rootCmd.AddCommand(initializeCommand(w))
 	rootCmd.AddCommand(projectCommand(w))
 
 	err := rootCmd.Execute()
-	resp.Err = err
+	resp.Error = err
 
 	return resp
 }
