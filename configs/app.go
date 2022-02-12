@@ -25,15 +25,15 @@ func GetAppConfig() Config {
 	}
 }
 
-func GetEnv(key string) (*string, error) {
+func GetEnv(key string) (string, error) {
 	err := godotenv.Load()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	val := os.Getenv(key)
 
-	return &val, nil
+	return val, nil
 }
 
 func SetEnv(key string, value string) error {
