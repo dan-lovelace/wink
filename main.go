@@ -11,8 +11,13 @@ import (
 )
 
 func main() {
+	cfg, err := configs.LoadConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	w := &common.Wink{
-		Config:  configs.GetAppConfig(),
+		Config:  cfg,
 		Context: context.Background(),
 		Out:     os.Stdout,
 	}

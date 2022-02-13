@@ -9,7 +9,7 @@ import (
 )
 
 func GetDB(w *common.Wink) *sql.DB {
-	db, err := sql.Open(w.Config.DB.Driver, w.Config.DB.Location)
+	db, err := sql.Open(w.Config.DBDriver, w.Config.DBLocation)
 	if err != nil {
 		log.Fatal(err)
 	}

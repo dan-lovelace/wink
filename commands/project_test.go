@@ -15,14 +15,17 @@ import (
 )
 
 func TestGetProjectsCommand(t *testing.T) {
+	cfg, err := configs.LoadConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// TODO
+	cfg.DBLocation = ""
+
 	b := bytes.NewBufferString("")
 	w := &common.Wink{
-		Config: configs.Config{
-			DB: &configs.DBConn{
-				Driver:   "sqlite3",
-				Location: "../testing.db",
-			},
-		},
+		Config:  cfg,
 		Context: context.Background(),
 		Out:     b,
 	}
@@ -51,16 +54,15 @@ func init() {
 	fmt.Println("init path", path)
 	dir := filepath.Dir(path)
 	fmt.Println("init dir", dir)
+	cfg, err := configs.LoadConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	w := &common.Wink{
-		Config: configs.Config{
-			DB: &configs.DBConn{
-				Driver:   "sqlite3",
-				Location: "../testing.db",
-			},
-		},
+		Config:  cfg,
 		Context: context.Background(),
-		// Out:     b,
+		Out:     os.Stdout,
 	}
 
 	initialize(w)

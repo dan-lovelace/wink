@@ -29,7 +29,7 @@ func RunMigrations(w *common.Wink, direction string) error {
 		log.Fatal(err)
 	}
 
-	m, err := migrate.NewWithInstance("file", fSrc, w.Config.DB.Driver, instance)
+	m, err := migrate.NewWithInstance("file", fSrc, w.Config.DBDriver, instance)
 	if err != nil {
 		log.Fatal(err)
 	}

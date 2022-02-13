@@ -8,7 +8,7 @@ import (
 )
 
 type Wink struct {
-	Config  configs.Config
+	Config  *configs.Config
 	Context context.Context
 	Out     io.Writer
 }
