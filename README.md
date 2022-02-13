@@ -17,3 +17,7 @@ Migrations are handled using [golang-migrate](https://github.com/golang-migrate/
 - New migration: `make newmigration name=<migration_name>` - Replace `<migration_name>` with a brief description of the changes. A good migration name would be something like `add_active_column_to_user_table`.
 - Migrate up: `make migrateup` - Runs ALL up migrations.
 - Migrate down: `make migratedown` - Runs ALL down migrations.
+
+# Testing
+
+`go test -v ./...`

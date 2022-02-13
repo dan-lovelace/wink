@@ -5,9 +5,9 @@ import (
 	"log"
 
 	"github.com/dan-lovelace/wink/common"
-	"github.com/dan-lovelace/wink/configs"
 	winkDB "github.com/dan-lovelace/wink/db"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 const currentProjectKey string = "CURRENT_PROJECT"
@@ -50,12 +50,15 @@ func getCurrentProjectCommand(w *common.Wink) *cobra.Command {
 		Short: "Display the current project",
 		Args:  cobra.ExactArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			val, err := configs.GetEnv(currentProjectKey)
-			if err != nil {
+			// load current config
+			viper.SetConfigFile(w.Config.Env.Path)
+			viper.SetConfigType(w.Config.Env.Type)
+			if err := viper.ReadInConfig(); err != nil {
 				log.Fatal(err)
 			}
+			val := viper.GetString(currentProjectKey)
 
-			fmt.Println(val)
+			fmt.Fprintln(cmd.OutOrStdout(), val)
 		},
 	}
 
@@ -92,7 +95,7 @@ func getProjectsCommand(w *common.Wink) *cobra.Command {
 					log.Fatal(err)
 				}
 
-				fmt.Println(name)
+				fmt.Fprintln(cmd.OutOrStdout(), name)
 				names = append(names, name)
 			}
 
@@ -147,7 +150,18 @@ func setProjectCommand(w *common.Wink) *cobra.Command {
 				log.Fatal(err)
 			}
 
-			configs.SetEnv(currentProjectKey, ret[0])
+			// load current config
+			viper.SetConfigFile(w.Config.Env.Path)
+			viper.SetConfigType(w.Config.Env.Type)
+			if err := viper.ReadInConfig(); err != nil {
+				log.Fatal(err)
+			}
+
+			// update current project
+			viper.Set(currentProjectKey, ret[0])
+			if err := viper.WriteConfig(); err != nil {
+				log.Fatal(err)
+			}
 		},
 	}
 

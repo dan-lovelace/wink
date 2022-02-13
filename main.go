@@ -14,6 +14,7 @@ func main() {
 	w := &common.Wink{
 		Config:  configs.GetAppConfig(),
 		Context: context.Background(),
+		Out:     os.Stdout,
 	}
 
 	if initResp := commands.CheckInit(w); initResp.Error != nil {
