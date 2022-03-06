@@ -9,10 +9,20 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	CurrentProject = "CURRENT_PROJECT"
+	DBDriver       = "DB_DRIVER"
+	DBLocation     = "DB_LOCATION"
+	InitDir        = "INIT_DIR"
+	TestDBLocation = "TEST_DB_LOCATION"
+)
+
 type Config struct {
 	CurrentProject string `mapstructure:"CURRENT_PROJECT"`
 	DBDriver       string `mapstructure:"DB_DRIVER"`
 	DBLocation     string `mapstructure:"DB_LOCATION"`
+	InitDir        string `mapstructure:"INIT_DIR"`
+	TestDBLocation string `mapstructure:"TEST_DB_LOCATION"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -41,9 +51,12 @@ func LoadConfig() (*Config, error) {
 	viper.AddConfigPath(cfgDir)
 
 	// viper defaults
-	viper.SetDefault("CURRENT_PROJECT", "")
-	viper.SetDefault("DB_DRIVER", "sqlite3")
-	viper.SetDefault("DB_LOCATION", path.Join(cfgDir, "wink_production.db"))
+	dbDriver := "sqlite3"
+	viper.SetDefault(CurrentProject, "")
+	viper.SetDefault(DBDriver, dbDriver)
+	viper.SetDefault(DBLocation, path.Join(cfgDir, fmt.Sprintf("wink_production.%s", dbDriver)))
+	viper.SetDefault(TestDBLocation, path.Join(cfgDir, fmt.Sprintf("wink_test.%s", dbDriver)))
+	viper.SetDefault(InitDir, "")
 
 	// load config for output
 	if err := viper.ReadInConfig(); err != nil {

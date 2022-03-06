@@ -1,13 +1,15 @@
 package db
 
 import (
-	"fmt"
 	"log"
+	"path"
 
 	"github.com/dan-lovelace/wink/common"
+	"github.com/dan-lovelace/wink/configs"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
 	"github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -24,7 +26,7 @@ func RunMigrations(w *common.Wink, direction string) error {
 		log.Fatal(err)
 	}
 
-	fSrc, err := (&file.File{}).Open("./migrate/migrations")
+	fSrc, err := (&file.File{}).Open(path.Join(viper.GetString(configs.InitDir), "migrate", "migrations"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,16 +36,13 @@ func RunMigrations(w *common.Wink, direction string) error {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Migrating", direction)
 	switch direction {
 	case UpCmd:
 		if err := m.Up(); err != nil {
-			log.Fatal(err)
 			return err
 		}
 	case DownCmd:
 		if err := m.Down(); err != nil {
-			log.Fatal(err)
 			return err
 		}
 	}

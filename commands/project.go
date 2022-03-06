@@ -5,12 +5,11 @@ import (
 	"log"
 
 	"github.com/dan-lovelace/wink/common"
+	"github.com/dan-lovelace/wink/configs"
 	winkDB "github.com/dan-lovelace/wink/db"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-
-const currentProjectKey string = "CURRENT_PROJECT"
 
 func createProjectCommand(w *common.Wink) *cobra.Command {
 	cmd := &cobra.Command{
@@ -19,7 +18,6 @@ func createProjectCommand(w *common.Wink) *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			name := args[0]
-			fmt.Println("Creating project", name)
 
 			db := winkDB.GetDB(w)
 			defer db.Close()
@@ -38,6 +36,8 @@ func createProjectCommand(w *common.Wink) *cobra.Command {
 			if _, err := res.LastInsertId(); err != nil {
 				log.Fatal(err)
 			}
+
+			fmt.Fprintln(cmd.OutOrStdout(), "Created", name)
 		},
 	}
 
@@ -50,7 +50,7 @@ func getCurrentProjectCommand(w *common.Wink) *cobra.Command {
 		Short: "Display the current project",
 		Args:  cobra.ExactArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			val := viper.GetString(currentProjectKey)
+			val := viper.GetString(configs.CurrentProject)
 			if len(val) == 0 {
 				val = "[No project selected]"
 			}
@@ -92,7 +92,11 @@ func getProjectsCommand(w *common.Wink) *cobra.Command {
 					log.Fatal(err)
 				}
 
-				fmt.Fprintln(cmd.OutOrStdout(), name)
+				outName := name
+				if viper.GetString(configs.CurrentProject) == name {
+					outName = fmt.Sprintf("* %s", name)
+				}
+				fmt.Fprintln(cmd.OutOrStdout(), outName)
 				names = append(names, name)
 			}
 
@@ -147,18 +151,10 @@ func setProjectCommand(w *common.Wink) *cobra.Command {
 				log.Fatal(err)
 			}
 
-			// TODO: update current project
-			// load current config
-			// viper.SetConfigFile(w.Config.Env.Path)
-			// viper.SetConfigType(w.Config.Env.Type)
-			// if err := viper.ReadInConfig(); err != nil {
-			// 	log.Fatal(err)
-			// }
-
-			// viper.Set(currentProjectKey, ret[0])
-			// if err := viper.WriteConfig(); err != nil {
-			// 	log.Fatal(err)
-			// }
+			viper.Set(configs.CurrentProject, ret[0])
+			if err := viper.WriteConfig(); err != nil {
+				log.Fatal(err)
+			}
 		},
 	}
 

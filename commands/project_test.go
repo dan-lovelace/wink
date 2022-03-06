@@ -7,31 +7,46 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
+	"strconv"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/dan-lovelace/wink/common"
 	"github.com/dan-lovelace/wink/configs"
+	"github.com/dan-lovelace/wink/db"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/spf13/viper"
 )
 
-func TestGetProjectsCommand(t *testing.T) {
-	cfg, err := configs.LoadConfig()
-	if err != nil {
-		log.Fatal(err)
-	}
+var now = time.Now()
+var pid = strconv.FormatInt(now.Unix(), 10)
+var pName = fmt.Sprintf("test-%s", pid)
+var b = bytes.NewBufferString("")
+var w *common.Wink
 
-	// TODO
-	cfg.DBLocation = ""
-
-	b := bytes.NewBufferString("")
-	w := &common.Wink{
-		Config:  cfg,
-		Context: context.Background(),
-		Out:     b,
-	}
-
+func TestCreateProjectCommand(t *testing.T) {
 	cmd := projectCommand(w)
 	cmd.SetOut(b)
+
+	cmd.SetArgs([]string{"create", pName})
+	cmd.Execute()
+
+	out, err := ioutil.ReadAll(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expect := fmt.Sprintf("Created %s", pName)
+	if !strings.Contains(string(out), expect) {
+		t.Fatalf("expected \"%s\" to include \"%s\"", string(out), expect)
+	}
+}
+
+func TestGetProjectsCommand(t *testing.T) {
+	cmd := projectCommand(w)
+	cmd.SetOut(b)
+
 	cmd.SetArgs([]string{"ls"})
 	cmd.Execute()
 
@@ -40,30 +55,28 @@ func TestGetProjectsCommand(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if string(out) != "test" {
-		t.Fatalf("expected \"%s\" got \"%s\"", "test", string(out))
+	expect := pName
+	if !strings.Contains(string(out), pName) {
+		t.Fatalf("expected \"%s\" to include \"%s\"", string(out), expect)
 	}
 }
 
 func init() {
-	fmt.Println("initting...")
-	path, err := os.Getwd()
-	if err != nil {
-		log.Println(err)
-	}
-	fmt.Println("init path", path)
-	dir := filepath.Dir(path)
-	fmt.Println("init dir", dir)
 	cfg, err := configs.LoadConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	w := &common.Wink{
+	cfg.DBLocation = viper.GetString(configs.TestDBLocation)
+	w = &common.Wink{
 		Config:  cfg,
 		Context: context.Background(),
 		Out:     os.Stdout,
 	}
 
-	initialize(w)
+	if err := db.RunMigrations(w, db.UpCmd); err != nil {
+		if err != migrate.ErrNoChange {
+			log.Fatal(err)
+		}
+	}
 }
